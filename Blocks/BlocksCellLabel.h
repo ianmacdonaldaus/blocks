@@ -1,5 +1,5 @@
 //
-//  ViewController.h
+//  BlocksCellLabel.h
 //  Blocks
 //
 //  Created by Ian MacDonald on 14/11/2012.
@@ -8,6 +8,6 @@
 
 #import <UIKit/UIKit.h>
 
-@interface ViewController : UIViewController
+@interface BlocksCellLabel : UITextView
 
 @end

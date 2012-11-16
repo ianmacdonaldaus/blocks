@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		828FC8E316544B1300B193F7 /* ios-linen.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 828FC8E216544B1300B193F7 /* ios-linen.jpg */; };
+		82CA9905165626D700F93B4C /* subtle-pattern-2.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 82CA9904165626D700F93B4C /* subtle-pattern-2.jpg */; };
 		82CD8A2016538E3800D29F20 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 82CD8A1F16538E3800D29F20 /* UIKit.framework */; };
 		82CD8A2216538E3800D29F20 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 82CD8A2116538E3800D29F20 /* Foundation.framework */; };
 		82CD8A2416538E3800D29F20 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 82CD8A2316538E3800D29F20 /* CoreGraphics.framework */; };
@@ -17,10 +19,18 @@
 		82CD8A3416538E3800D29F20 /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 82CD8A3316538E3800D29F20 /* Default@2x.png */; };
 		82CD8A3616538E3800D29F20 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 82CD8A3516538E3800D29F20 /* Default-568h@2x.png */; };
 		82CD8A3916538E3900D29F20 /* MainStoryboard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 82CD8A3716538E3900D29F20 /* MainStoryboard.storyboard */; };
-		82CD8A3C16538E3900D29F20 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 82CD8A3B16538E3900D29F20 /* ViewController.m */; };
+		82CD8A4416538E5400D29F20 /* BlocksViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 82CD8A4316538E5400D29F20 /* BlocksViewController.m */; };
+		82CD8A4716538E9900D29F20 /* BlocksView.m in Sources */ = {isa = PBXBuildFile; fileRef = 82CD8A4616538E9900D29F20 /* BlocksView.m */; };
+		82CD8A4A16538EC600D29F20 /* Block.m in Sources */ = {isa = PBXBuildFile; fileRef = 82CD8A4916538EC600D29F20 /* Block.m */; };
+		82CD8A4D16538ED400D29F20 /* BlocksCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 82CD8A4C16538ED400D29F20 /* BlocksCell.m */; };
+		82CD8A5416539F3E00D29F20 /* BlocksCellLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 82CD8A5316539F3E00D29F20 /* BlocksCellLabel.m */; };
+		82E80322165556A500C8DFAE /* paper-4.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 82E80321165556A500C8DFAE /* paper-4.jpg */; };
+		82E83E9A1654142F00C51DC5 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 82E83E991654142F00C51DC5 /* QuartzCore.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		828FC8E216544B1300B193F7 /* ios-linen.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = "ios-linen.jpg"; path = "../../../Resources/Textures/ios-linen/ios-linen.jpg"; sourceTree = "<group>"; };
+		82CA9904165626D700F93B4C /* subtle-pattern-2.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = "subtle-pattern-2.jpg"; path = "../../Resources/Textures/subtle-patterns/subtle-pattern-2.jpg"; sourceTree = "<group>"; };
 		82CD8A1B16538E3800D29F20 /* Blocks.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Blocks.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		82CD8A1F16538E3800D29F20 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		82CD8A2116538E3800D29F20 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -35,8 +45,18 @@
 		82CD8A3316538E3800D29F20 /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default@2x.png"; sourceTree = "<group>"; };
 		82CD8A3516538E3800D29F20 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
 		82CD8A3816538E3900D29F20 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = en; path = en.lproj/MainStoryboard.storyboard; sourceTree = "<group>"; };
-		82CD8A3A16538E3900D29F20 /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
-		82CD8A3B16538E3900D29F20 /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
+		82CD8A4216538E5400D29F20 /* BlocksViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BlocksViewController.h; sourceTree = SOURCE_ROOT; };
+		82CD8A4316538E5400D29F20 /* BlocksViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BlocksViewController.m; sourceTree = SOURCE_ROOT; };
+		82CD8A4516538E9900D29F20 /* BlocksView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BlocksView.h; sourceTree = "<group>"; };
+		82CD8A4616538E9900D29F20 /* BlocksView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BlocksView.m; sourceTree = "<group>"; };
+		82CD8A4816538EC600D29F20 /* Block.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Block.h; sourceTree = "<group>"; };
+		82CD8A4916538EC600D29F20 /* Block.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Block.m; sourceTree = "<group>"; };
+		82CD8A4B16538ED400D29F20 /* BlocksCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BlocksCell.h; sourceTree = "<group>"; };
+		82CD8A4C16538ED400D29F20 /* BlocksCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BlocksCell.m; sourceTree = "<group>"; };
+		82CD8A5216539F3D00D29F20 /* BlocksCellLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BlocksCellLabel.h; sourceTree = "<group>"; };
+		82CD8A5316539F3E00D29F20 /* BlocksCellLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BlocksCellLabel.m; sourceTree = "<group>"; };
+		82E80321165556A500C8DFAE /* paper-4.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = "paper-4.jpg"; path = "../../Resources/Textures/paper-textures/paper-4.jpg"; sourceTree = "<group>"; };
+		82E83E991654142F00C51DC5 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -44,6 +64,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				82E83E9A1654142F00C51DC5 /* QuartzCore.framework in Frameworks */,
 				82CD8A2016538E3800D29F20 /* UIKit.framework in Frameworks */,
 				82CD8A2216538E3800D29F20 /* Foundation.framework in Frameworks */,
 				82CD8A2416538E3800D29F20 /* CoreGraphics.framework in Frameworks */,
@@ -56,9 +77,12 @@
 		82CD8A1016538E3800D29F20 = {
 			isa = PBXGroup;
 			children = (
+				82E83E991654142F00C51DC5 /* QuartzCore.framework */,
 				82CD8A2516538E3800D29F20 /* Blocks */,
 				82CD8A1E16538E3800D29F20 /* Frameworks */,
 				82CD8A1C16538E3800D29F20 /* Products */,
+				82E80321165556A500C8DFAE /* paper-4.jpg */,
+				82CA9904165626D700F93B4C /* subtle-pattern-2.jpg */,
 			);
 			sourceTree = "<group>";
 		};
@@ -86,8 +110,14 @@
 				82CD8A2E16538E3800D29F20 /* AppDelegate.h */,
 				82CD8A2F16538E3800D29F20 /* AppDelegate.m */,
 				82CD8A3716538E3900D29F20 /* MainStoryboard.storyboard */,
-				82CD8A3A16538E3900D29F20 /* ViewController.h */,
-				82CD8A3B16538E3900D29F20 /* ViewController.m */,
+				82CD8A4216538E5400D29F20 /* BlocksViewController.h */,
+				82CD8A4316538E5400D29F20 /* BlocksViewController.m */,
+				82CD8A4B16538ED400D29F20 /* BlocksCell.h */,
+				82CD8A4C16538ED400D29F20 /* BlocksCell.m */,
+				82CD8A5216539F3D00D29F20 /* BlocksCellLabel.h */,
+				82CD8A5316539F3E00D29F20 /* BlocksCellLabel.m */,
+				82CD8A4816538EC600D29F20 /* Block.h */,
+				82CD8A4916538EC600D29F20 /* Block.m */,
 				82CD8A2616538E3800D29F20 /* Supporting Files */,
 			);
 			path = Blocks;
@@ -96,6 +126,9 @@
 		82CD8A2616538E3800D29F20 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				828FC8E216544B1300B193F7 /* ios-linen.jpg */,
+				82CD8A4516538E9900D29F20 /* BlocksView.h */,
+				82CD8A4616538E9900D29F20 /* BlocksView.m */,
 				82CD8A2716538E3800D29F20 /* Blocks-Info.plist */,
 				82CD8A2816538E3800D29F20 /* InfoPlist.strings */,
 				82CD8A2B16538E3800D29F20 /* main.m */,
@@ -163,6 +196,9 @@
 				82CD8A3416538E3800D29F20 /* Default@2x.png in Resources */,
 				82CD8A3616538E3800D29F20 /* Default-568h@2x.png in Resources */,
 				82CD8A3916538E3900D29F20 /* MainStoryboard.storyboard in Resources */,
+				828FC8E316544B1300B193F7 /* ios-linen.jpg in Resources */,
+				82E80322165556A500C8DFAE /* paper-4.jpg in Resources */,
+				82CA9905165626D700F93B4C /* subtle-pattern-2.jpg in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -175,7 +211,11 @@
 			files = (
 				82CD8A2C16538E3800D29F20 /* main.m in Sources */,
 				82CD8A3016538E3800D29F20 /* AppDelegate.m in Sources */,
-				82CD8A3C16538E3900D29F20 /* ViewController.m in Sources */,
+				82CD8A4416538E5400D29F20 /* BlocksViewController.m in Sources */,
+				82CD8A4716538E9900D29F20 /* BlocksView.m in Sources */,
+				82CD8A4A16538EC600D29F20 /* Block.m in Sources */,
+				82CD8A4D16538ED400D29F20 /* BlocksCell.m in Sources */,
+				82CD8A5416539F3E00D29F20 /* BlocksCellLabel.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -258,7 +298,9 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Blocks/Blocks-Prefix.pch";
 				INFOPLIST_FILE = "Blocks/Blocks-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = 2;
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -269,7 +311,9 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Blocks/Blocks-Prefix.pch";
 				INFOPLIST_FILE = "Blocks/Blocks-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = 2;
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;
@@ -293,6 +337,7 @@
 				82CD8A4116538E3900D29F20 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
