@@ -14,6 +14,8 @@
 
 @property (nonatomic) Block* block;
 
+@property (nonatomic, retain) CALayer* selectedLayer;
+
 +(id)newBlockCellWithBlock:(Block *)block;
 
 @end

@@ -13,6 +13,7 @@
 @implementation BlocksCell {
     Block* _block;
     BlocksCellLabel* _label;
+    
 }
 
 - (id)initWithFrame:(CGRect)frame

@@ -10,9 +10,9 @@
 #import "BlocksView.h"
 #import "Block.h"
 
-@interface BlocksViewController : UIViewController
+@interface BlocksViewController : UIViewController <UIScrollViewDelegate>
 
-@property (strong, nonatomic) IBOutlet BlocksView *blocksView;
+//@property (strong, nonatomic) IBOutlet BlocksView *blocksView;
 
 
 @end
