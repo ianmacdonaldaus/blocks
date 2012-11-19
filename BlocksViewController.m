@@ -11,7 +11,6 @@
  - add a gradient to the buttons
  - need to set minimum dimensions for the blocks
  - need to bring selected block to the foreground
- - need to add a scrollview
  - need to be able to set duration
  - need to reshuffle blocks based on moves
  - need to expand in editing mode
@@ -27,36 +26,22 @@
 #import <QuartzCore/QuartzCore.h>
 
 const float DISPLAY_MARGIN = 50.0f;
-const float CELL_HEIGHT = 60.0f;
+const float CELL_HEIGHT_MINIMUM = 60.0f;
 const float CELL_WIDTH_MINIMUM = 50.0f;
-
-//const float SCROLLVIEW_WIDTH = 3000.0f;
-
 
 @interface BlocksViewController () {
     NSMutableArray* _blocksArray;
     NSMutableArray* _blocksCellsArray;
     NSMutableArray* _arrayOfCenterPoints;
-    UITextField* _frameTextField;
-    UIScrollView* _mainView;
-    UIView* _deleteBox;
-    CAGradientLayer* _completedGradient;
-    CGSize _mainViewContentSize;
+
+    UIView* _mainView;
     float _durationScale;
+    BOOL _layoutForwards;
 }
 
 @end
 
 @implementation BlocksViewController
-
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
-{
-    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
-    if (self) {
-
-    }
-    return self;
-}
 
 - (id)init
 {
@@ -64,47 +49,32 @@ const float CELL_WIDTH_MINIMUM = 50.0f;
     return self;
 }
 
+#pragma mark -
+#pragma mark Setup methods
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    self.view.backgroundColor = [UIColor darkGrayColor];
+    self.view.backgroundColor = [UIColor lightGrayColor];
     
-    //Create a Scrollview
-    _mainView = [[UIScrollView alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
-    _mainView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-    _mainView.autoresizesSubviews = YES;
-    _mainView.backgroundColor = [UIColor lightGrayColor];
-    [self.view addSubview:_mainView];
-    _mainView.scrollEnabled = YES;
-    
-    // Position Scroll View
-    _mainViewContentSize = CGSizeMake(3000.0f, _mainView.frame.size.height);
-    _mainView.contentSize = _mainViewContentSize;
-    _mainView.contentOffset = CGPointMake(_mainView.contentSize.width - _mainView.frame.size.width, 0);
-    
-    //Add Background
-    /*UIImageView* imageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"subtle-pattern-2.jpg"]];
-    imageView.contentMode = UIViewContentModeScaleToFill;
-    imageView.frame = self.view.bounds;
-    imageView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-    [_mainView addSubview:imageView];
-    */
-    [self drawCompletionSegment];
-    [self drawDeleteBox];
-    [_mainView.layer insertSublayer:_completedGradient atIndex:0];
-    
+    //Setup Arrays and data
     _blocksArray = [[NSMutableArray alloc] init];
     _blocksCellsArray = [[NSMutableArray alloc] init];
-    
     [self setupDataModel];
- 
-
- 
+    
+    _mainView = [[UIView alloc] initWithFrame:CGRectMake(10, 10,1000,700)];
+    _mainView.backgroundColor = [UIColor whiteColor];
+    _mainView.layer.borderColor = [[UIColor darkGrayColor] CGColor];
+    _mainView.layer.shadowOpacity = 0.5;
+    _mainView.layer.shadowRadius = 6;
+    _mainView.layer.shadowOffset= CGSizeMake(10, 10);
+    _mainView.layer.cornerRadius = 6;
+    _mainView.layer.borderWidth = 1;
+    
+    [self.view addSubview:_mainView];
+    
     //DIAGNOSTICS !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    
-    self.view.backgroundColor = [UIColor whiteColor];
-    
-    
+
     //Create Diagnostics button
     UIButton* showDiagnosticsButton = [UIButton buttonWithType:UIButtonTypeInfoLight];
     showDiagnosticsButton.frame = CGRectMake(0, 0, 40, 40);
@@ -125,11 +95,6 @@ const float CELL_WIDTH_MINIMUM = 50.0f;
 -(void) viewDidAppear:(BOOL)animated {
     [self setupBlocksCells];
     [self updateDisplayLayout];
-    
-     //DIAGNOSTICS !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    _frameTextField = [[UITextField alloc] initWithFrame:CGRectMake(100, 10, 200, 20)];
-    _frameTextField.text = NSStringFromCGSize(self.view.frame.size);
-    [_mainView addSubview:_frameTextField];
 }
 
 -(void)setupDataModel {
@@ -154,22 +119,18 @@ const float CELL_WIDTH_MINIMUM = 50.0f;
         [cell addGestureRecognizer:gestureRecognizer];
         
         [_mainView addSubview:cell];
-        
     }
 }
 
 -(void) updateDisplayLayout {
-   
-    [self UpdateScrollViewContent];
-    
+       
     [UIView animateWithDuration:0.2 animations:^{
       
         //Set up layout helper measures
-        //float totalDuration = [self getTotalDuration];
-        float mininumDuration = [self getMinimumDuration];
-        mininumDuration = mininumDuration + 0;
-        _durationScale = CELL_WIDTH_MINIMUM / mininumDuration;
-      
+        float totalDuration = [self getTotalDuration];
+        float mainViewWidth = _mainView.frame.size.width;
+        float mainViewHeight = _mainView.frame.size.height;
+        float durationScale = mainViewWidth / totalDuration;
         // xOffset counts up for each block size and positioned back the completion line
         // yOffset counts down for each cell
         float xOffset = 0;
@@ -177,8 +138,8 @@ const float CELL_WIDTH_MINIMUM = 50.0f;
         NSEnumerator *enumerator = [_blocksCellsArray reverseObjectEnumerator];
          for (BlocksCell* cell in enumerator) {
             Block *block = cell.block;
-            float blockWidth = _durationScale * block.durationLength;
-            CGRect cellFrame = CGRectMake(_mainView.contentSize.width - DISPLAY_MARGIN - blockWidth - xOffset, DISPLAY_MARGIN + yOffset, blockWidth, CELL_HEIGHT);
+            float blockWidth = durationScale * block.durationLength;
+            CGRect cellFrame = CGRectMake(_mainView.frame.size.width - blockWidth - xOffset, yOffset, blockWidth, CELL_HEIGHT);
             
             cell.frame = cellFrame;
             block.x = DISPLAY_MARGIN + xOffset;
@@ -193,12 +154,7 @@ const float CELL_WIDTH_MINIMUM = 50.0f;
     }];
     }
 
--(void)UpdateScrollViewContent {
-    float _mainViewContentWidth = MAX((_durationScale *[self getTotalDuration]) + DISPLAY_MARGIN, _mainView.frame.size.width);
-    _mainViewContentSize = CGSizeMake(_mainViewContentWidth, _mainViewContentSize.height);
-    _mainView.contentSize = _mainViewContentSize;
-    _mainView.contentOffset = CGPointMake(_mainViewContentSize.width - _mainView.frame.size.width, 0);
-}
+
 
 
 #pragma mark -
@@ -212,53 +168,6 @@ const float CELL_WIDTH_MINIMUM = 50.0f;
     return [UIColor colorWithRed:val green:0.5*(1-val) blue:0.0 alpha:1.0];
 }
 
--(void)drawCompletionSegment {
-    _completedGradient = [CAGradientLayer layer];
-    _completedGradient.frame = CGRectMake(_mainView.contentSize.width - DISPLAY_MARGIN, 0, self.view.frame.size.width, _mainView.frame.size.height);
-    _completedGradient.colors = @[
-    (id)[[UIColor colorWithWhite:0.0f alpha:0.8f] CGColor],
-    (id)[[UIColor colorWithWhite:0.0f alpha:0.5f] CGColor],
-    (id)[[UIColor colorWithWhite:0.0f alpha:0.3f] CGColor]];
-    _completedGradient.locations = @[@0.00f, @0.05f, @0.5f];
-    _completedGradient.startPoint = CGPointMake(0.0, 0.5);
-    _completedGradient.endPoint = CGPointMake(1.0, 0.5);
-}
-
-const float DELETE_BOX_WIDTH = 600;
-const float DELETE_BOX_HEIGHT = 100;
-
--(void)drawDeleteBox {
-    _deleteBox = [[UIView alloc] initWithFrame:CGRectMake((_mainView.frame.size.width - DELETE_BOX_WIDTH-DISPLAY_MARGIN)/2, _mainView.frame.size.height - DISPLAY_MARGIN - DELETE_BOX_HEIGHT, DELETE_BOX_WIDTH, DELETE_BOX_HEIGHT)];
-    //view.backgroundColor = [UIColor blackColor];
-    //view.layer.shadowOpacity = 0.5;
-    
-    
-    _deleteBox.autoresizingMask = UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin;
-    
-    UILabel* label = [[UILabel alloc] initWithFrame:CGRectMake(75, 0, 600, 100)];
-    label.text = @"DRAG HERE TO DELETE";
-    label.font = [UIFont fontWithName:@"Helvetica-Bold" size:42];
-    label.textColor = [UIColor blackColor];
-    label.alpha = 0.5;
-    label.backgroundColor = [UIColor clearColor];
-    label.shadowColor = [UIColor darkGrayColor];
-    [_deleteBox addSubview:label];
-    
-    CAGradientLayer* layer = [CAGradientLayer layer];
-    layer.frame = CGRectMake(0, 0, _deleteBox.frame.size.width, _deleteBox.frame.size.height);
-
-    layer.colors = @[
-        (id)[[UIColor colorWithWhite:0.0f alpha:0.8f] CGColor],
-        (id)[[UIColor colorWithWhite:0.0f alpha:0.5f] CGColor],
-        (id)[[UIColor colorWithWhite:0.0f alpha:0.3f] CGColor]];
-    
-    layer.locations = @[@0.0f, @0.01f, @0.03f];
-    layer.startPoint = CGPointMake(0.0, 0.5);
-    layer.endPoint = CGPointMake(1.0, 0.5);
-    [_deleteBox.layer insertSublayer:layer atIndex:0];
-    
-    [self.view addSubview:_deleteBox];
-}
 
 #pragma mark -
 #pragma mark Data Model methods
@@ -392,9 +301,9 @@ const float DELETE_BOX_HEIGHT = 100;
 
 //        [self updateDisplayLayout];
         
-        if (CGRectContainsPoint(_deleteBox.frame, sender.view.center)) {
-                [self deleteBlock:block];
-        }
+        //if (CGRectContainsPoint(_deleteBox.frame, sender.view.center)) {
+        //       [self deleteBlock:block];
+        //}
     }
 
 }
@@ -413,12 +322,7 @@ const float DELETE_BOX_HEIGHT = 100;
 
 - (void) didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
 {
-    _frameTextField.text = NSStringFromCGSize(_mainView.frame.size);
-    _mainView.contentSize = _mainViewContentSize;
-    _mainView.contentOffset = CGPointMake(_mainView.contentSize.width - _mainView.frame.size.width, 0);
     [self updateDisplayLayout];
-    [self drawCompletionSegment];
-    
 }
 
 #pragma mark -
@@ -433,6 +337,26 @@ const float DELETE_BOX_HEIGHT = 100;
     NSLog(@"array of center points: %@",_arrayOfCenterPoints);
 }
 
+-(CGPoint)cellPositionForIndex:(NSInteger)index withDuration:(float)duration withTime:(float)time
+{
+    CGPoint cellPosition = CGPointZero;
+    
+    float mainViewWidth = _mainView.frame.size.width;
+    float mainViewHeight = _mainView.frame.size.height;
 
+    //Determine X position
+    float totalHorizontal = [self getTotalDuration];                //Replace with a local variable to remove calculation
+    float horizontalScale = mainViewWidth / totalHorizontal;
+    float cellWidth = MAX(CELL_WIDTH_MINIMUM,duration * horizontalScale);
+
+    //Determine Y position
+    float totalVertical = _blocksCellsArray.count;
+    float verticalScale = mainViewHeight / totalVertical;
+    float cellHeight = MIN(CELL_HEIGHT_MINIMUM, verticalScale);
+    
+    return cellPosition;
+}
+
+-(BOOL)
 
 @end
