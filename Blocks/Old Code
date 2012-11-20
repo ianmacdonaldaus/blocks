@@ -1,4 +1,12 @@
 
+Need to install gesture recognizer on the _mainView and detect layer:
+- (CALayer *)hitTest:(CGPoint)thePoint
+CALayer* layerThatWasTapped = [gestureView.layer hitTest:[gestureRecognizer locationInView:gestureView]];
+
+
+    UIPanGestureRecognizer* gestureRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handlePan:)];
+        [cell addGestureRecognizer:gestureRecognizer];
+
     
     CGSize _scrollViewContentSize;
     CGSize _scrollViewSize;

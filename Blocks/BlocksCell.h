@@ -6,11 +6,11 @@
 //  Copyright (c) 2012 Ian MacDonald. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
+#import <QuartzCore/QuartzCore.h>
 #import "Block.h"
 #import "BlocksCellLabel.h"
 
-@interface BlocksCell : UIView <UITextFieldDelegate>
+@interface BlocksCell : CALayer
 
 @property (nonatomic) Block* block;
 

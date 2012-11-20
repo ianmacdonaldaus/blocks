@@ -33,6 +33,7 @@ const float CELL_WIDTH_MINIMUM = 50.0f;
     NSMutableArray* _blocksArray;
     NSMutableArray* _blocksCellsArray;
     NSMutableArray* _arrayOfCenterPoints;
+    BlocksCell* _selectedCell;
 
     UIView* _mainView;
     float _durationScale;
@@ -62,7 +63,7 @@ const float CELL_WIDTH_MINIMUM = 50.0f;
     _blocksCellsArray = [[NSMutableArray alloc] init];
     [self setupDataModel];
     
-    _mainView = [[UIView alloc] initWithFrame:CGRectMake(10, 10,1000,700)];
+    _mainView = [[UIView alloc] initWithFrame:CGRectMake(20, 20,964,700)];
     _mainView.backgroundColor = [UIColor whiteColor];
     _mainView.layer.borderColor = [[UIColor darkGrayColor] CGColor];
     _mainView.layer.shadowOpacity = 0.5;
@@ -70,8 +71,13 @@ const float CELL_WIDTH_MINIMUM = 50.0f;
     _mainView.layer.shadowOffset= CGSizeMake(10, 10);
     _mainView.layer.cornerRadius = 6;
     _mainView.layer.borderWidth = 1;
+
     
     [self.view addSubview:_mainView];
+    
+    UIPanGestureRecognizer* gestureRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handlePan:)];
+    [_mainView addGestureRecognizer:gestureRecognizer];
+    
     
     //DIAGNOSTICS !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
@@ -111,14 +117,12 @@ const float CELL_WIDTH_MINIMUM = 50.0f;
 
 -(void) setupBlocksCells {
     for (Block* block  in _blocksArray) {
-        BlocksCell* cell = [[BlocksCell alloc] initWithFrame:CGRectMake(0, 0, 100, CELL_HEIGHT)];
+        BlocksCell* cell = [[BlocksCell alloc] init];
         [_blocksCellsArray addObject:cell];
         cell.block = block;
         
-        UIPanGestureRecognizer* gestureRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handlePan:)];
-        [cell addGestureRecognizer:gestureRecognizer];
-        
-        [_mainView addSubview:cell];
+                
+        [_mainView.layer addSublayer:cell];
     }
 }
 
@@ -134,20 +138,20 @@ const float CELL_WIDTH_MINIMUM = 50.0f;
         // xOffset counts up for each block size and positioned back the completion line
         // yOffset counts down for each cell
         float xOffset = 0;
-        float yOffset = CELL_HEIGHT * _blocksCellsArray.count;
+        float yOffset = CELL_HEIGHT_MINIMUM * _blocksCellsArray.count;
         NSEnumerator *enumerator = [_blocksCellsArray reverseObjectEnumerator];
          for (BlocksCell* cell in enumerator) {
             Block *block = cell.block;
             float blockWidth = durationScale * block.durationLength;
-            CGRect cellFrame = CGRectMake(_mainView.frame.size.width - blockWidth - xOffset, yOffset, blockWidth, CELL_HEIGHT);
+            CGRect cellFrame = CGRectMake(_mainView.frame.size.width - blockWidth - xOffset, yOffset, blockWidth, CELL_HEIGHT_MINIMUM);
             
             cell.frame = cellFrame;
             block.x = DISPLAY_MARGIN + xOffset;
             block.y = DISPLAY_MARGIN + yOffset;
             cell.block = block;                       //allocate Block to cell.block
             xOffset += blockWidth;
-            yOffset -= CELL_HEIGHT;
-           cell.backgroundColor = [self colorForIndex:[_blocksCellsArray indexOfObject:cell]];
+            yOffset -= CELL_HEIGHT_MINIMUM;
+           cell.backgroundColor = [[self colorForIndex:[_blocksCellsArray indexOfObject:cell]] CGColor];
          }
     } completion:^(BOOL finished) {
         
@@ -184,7 +188,7 @@ const float CELL_WIDTH_MINIMUM = 50.0f;
 
 - (void) deleteBlock:(Block*)block{
 //    NSMutableArray = [self getArrayOfBlockCells];
-    for (BlocksCell* cell in _blocksCellsArray) {
+    /*for (BlocksCell* cell in _blocksCellsArray) {
         if (cell.block == block){
             NSLog(@"%@",block.text);
             
@@ -198,20 +202,16 @@ const float CELL_WIDTH_MINIMUM = 50.0f;
             }];
             break;
         }
-    }
+    }*/
 
 }
 
 - (void) addBlock {
     Block* block = [Block newBlockWithText:@"What is the task?"];
-    BlocksCell* blocksCell = [BlocksCell newBlockCellWithBlock:block];
+    BlocksCell* cell = [BlocksCell newBlockCellWithBlock:block];
     [_blocksArray addObject:block];
-    [_blocksCellsArray addObject:blocksCell];
-    
-    UIPanGestureRecognizer* gestureRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handlePan:)];
-    [blocksCell addGestureRecognizer:gestureRecognizer];
-    
-    [_mainView addSubview:blocksCell];
+    [_blocksCellsArray addObject:cell];
+    [_mainView.layer addSublayer:cell];
     [self updateDisplayLayout];
 }
 
@@ -258,33 +258,47 @@ const float CELL_WIDTH_MINIMUM = 50.0f;
 
 // NEED TO IDENTIFY WHAT CELL MATCHES THE SENDER.VIEW TO GET AND SET BLOCK INFO
 
--(void)handlePan:(UIPanGestureRecognizer *)sender {
-  
-    BlocksCell* selectedCell = (BlocksCell*)[sender view];
-    Block* block = selectedCell.block;
+- (BlocksCell*)layerAtPoint:(CGPoint)point
+{
+    for ( BlocksCell *layer in _blocksCellsArray)
+        if ( CGRectContainsPoint(layer.frame, point ) )
+            return layer;
+    
+    return nil;
+}
 
+-(void)handlePan:(UIPanGestureRecognizer *)sender {
     if (sender.state == UIGestureRecognizerStateBegan) {
-        [self arrayOfCenterPoints];
-        
-        //NOT WORKING  NEED A WAY TO RESIGN FIRST RESPONDER ON DRAG[self resignFirstResponder];
+        _selectedCell = [self layerAtPoint:[sender locationInView:_mainView]];
+        _selectedCell.transform = CATransform3DMakeScale(1.25f, 1.25f, 1.0f);
+        CGSize shadowOffset = _selectedCell.shadowOffset;
+        _selectedCell.shadowOffset = shadowOffset;
+        _selectedCell.shadowOffset = CGSizeMake(10, 10);
+        _selectedCell.zPosition = 100;
     }
 
     if (sender.state == UIGestureRecognizerStateChanged) {
         CGPoint translate = [sender translationInView:_mainView];
-        CGRect newFrame = sender.view.frame;
+        CGRect newFrame = _selectedCell.frame;
         newFrame.origin.x += translate.x;
         newFrame.origin.y += translate.y;
+        if (CGRectContainsRect(_mainView.bounds, newFrame)) {
+            [CATransaction begin];
+            [CATransaction setValue:(id)kCFBooleanTrue forKey:kCATransactionDisableActions];
+            _selectedCell.frame = newFrame;
+            [CATransaction commit];
+        }
         
-        sender.view.frame = newFrame;
+        // Need to prevent frame from leaving bounds
+        
+        
         [sender setTranslation:CGPointMake(0, 0) inView:sender.view];
         
-        // ACTION - need to bring sender.view above other cells
-        
-        for (BlocksCell *cell in _blocksCellsArray) {
-            if (cell != selectedCell && CGRectContainsPoint(cell.frame, newFrame.origin)) {
+       /* for (BlocksCell *cell in _blocksCellsArray) {
+            if (cell != _selectedCell && CGRectContainsPoint(cell.frame, newFrame.origin)) {
                 NSLog(@"hit %@ , %@",NSStringFromCGRect(cell.frame),NSStringFromCGPoint(newFrame.origin));
             }
-        }
+        }*/
         
        /* for (NSValue *value in [self arrayOfCenterPoints]) {
             CGPoint pt = [value CGPointValue];
@@ -295,9 +309,12 @@ const float CELL_WIDTH_MINIMUM = 50.0f;
     }
     
     if (sender.state == UIGestureRecognizerStateEnded) {
-        NSLog(@"Moved: %@",block.text);
-        block.x = sender.view.frame.origin.x;
-        block.y = sender.view.frame.origin.y;
+        _selectedCell.transform = CATransform3DMakeScale(1.0f, 1.0f, 1.0f);
+        _selectedCell.shadowOffset = CGSizeMake(2,3);
+        _selectedCell.zPosition = 0;
+        _selectedCell = nil;
+        //block.x = sender.view.frame.origin.x;
+        //block.y = sender.view.frame.origin.y;
 
 //        [self updateDisplayLayout];
         
@@ -308,21 +325,13 @@ const float CELL_WIDTH_MINIMUM = 50.0f;
 
 }
 
+
 #pragma mark -
 #pragma mark Miscellaneous
 
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
-}
-
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-    return YES;
-}
-
-- (void) didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
-{
-    [self updateDisplayLayout];
 }
 
 #pragma mark -
@@ -351,12 +360,10 @@ const float CELL_WIDTH_MINIMUM = 50.0f;
 
     //Determine Y position
     float totalVertical = _blocksCellsArray.count;
-    float verticalScale = mainViewHeight / totalVertical;
+    float verticalScale = (mainViewHeight - 50) / totalVertical;
     float cellHeight = MIN(CELL_HEIGHT_MINIMUM, verticalScale);
     
     return cellPosition;
 }
-
--(BOOL)
 
 @end

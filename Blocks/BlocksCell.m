@@ -12,38 +12,41 @@
 
 @implementation BlocksCell {
     Block* _block;
-    BlocksCellLabel* _label;
+    CATextLayer* _textLayer;
     
 }
 
-- (id)initWithFrame:(CGRect)frame
+- (id)init
 {
-    self = [super initWithFrame:frame];
+    self = [super init];
+    
     if (self) {
         //Set Label
-        _label = [[BlocksCellLabel alloc] initWithFrame:CGRectNull];
-        _label.textColor = [UIColor whiteColor];
-        //_label.delegate = self;
-        _label.font = [UIFont boldSystemFontOfSize:12];
-        _label.clipsToBounds = YES;
-        _label.textAlignment = NSTextAlignmentCenter;
-        _label.backgroundColor = [UIColor clearColor];
-        _label.scrollEnabled = NO;
-        //_label.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
-        [self addSubview:_label];
         
-       self.backgroundColor = [UIColor whiteColor];
+        _textLayer = [CATextLayer layer];
+        _textLayer.foregroundColor = [[UIColor whiteColor] CGColor];
+        _textLayer.font = CGFontCreateWithFontName(CFSTR("HelveticaNeue-Bold"));
+        _textLayer.fontSize = 14;
+        _textLayer.alignmentMode = kCAAlignmentCenter;
+        _textLayer.wrapped = YES;
+        _textLayer.frame = self.frame;
+        _textLayer.contentsScale = [[UIScreen mainScreen] scale];
+        //[self addSublayer:_textLayer];
+    
+        self.backgroundColor = [[UIColor blueColor] CGColor];
         
-        //Set Layer
-        self.layer.borderColor = [[UIColor blackColor] CGColor];
-        self.layer.shadowOpacity = 0.6;
-        self.layer.shadowOffset = CGSizeMake(2, 3);
-        self.layer.shadowRadius = 3;
-        self.layer.cornerRadius = 4;
+        //Set Layer Properties
         
-        //Gesture Recognizers
-        //UIPanGestureRecognizer* gestureRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handlePan:)];
-        //[self addGestureRecognizer:gestureRecognizer];
+        self.opacity = 0.8;
+        
+        self.shadowOpacity = 0.6;
+        self.borderColor = [[UIColor blackColor] CGColor];
+        self.shadowOffset = CGSizeMake(2, 3);
+        self.shadowRadius = 3;
+        self.cornerRadius = 5;
+        self.rasterizationScale = [[UIScreen mainScreen] scale];
+        self.shouldRasterize = YES;
+        
     }
     return self;
 }
@@ -69,13 +72,16 @@
     }
 }
 */
--(void) layoutSubviews {
-    [super layoutSubviews];
-    _label.frame = self.bounds;
+
+- (void)layoutSublayers
+{
+    [super layoutSublayers];
+    _textLayer.frame = self.bounds;
 }
+
 -(void)setBlock:(Block *)block {
     _block = block;
-    _label.text = _block.text;
+    _textLayer.string = _block.text;
 }
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField
@@ -101,7 +107,7 @@
 }
 
 +(id)newBlockCellWithBlock:(Block *)block {
-    BlocksCell* blocksCell = [[BlocksCell alloc] initWithFrame:CGRectNull];
+    BlocksCell* blocksCell = [[BlocksCell alloc] init];
     blocksCell.block = block;
     return blocksCell;
 }
