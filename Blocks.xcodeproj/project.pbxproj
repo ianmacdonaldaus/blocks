@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		820080B31659859C003F1166 /* Old Code in Resources */ = {isa = PBXBuildFile; fileRef = 820080B21659859C003F1166 /* Old Code */; };
 		828FC8E316544B1300B193F7 /* ios-linen.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 828FC8E216544B1300B193F7 /* ios-linen.jpg */; };
+		82938C97165D59C7006887AB /* OneFingerRotationGestureRecognizer.m in Sources */ = {isa = PBXBuildFile; fileRef = 82938C96165D59C7006887AB /* OneFingerRotationGestureRecognizer.m */; };
+		82938C9A165E0863006887AB /* RotationView.m in Sources */ = {isa = PBXBuildFile; fileRef = 82938C99165E0863006887AB /* RotationView.m */; };
 		82CA9905165626D700F93B4C /* subtle-pattern-2.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 82CA9904165626D700F93B4C /* subtle-pattern-2.jpg */; };
 		82CD8A2016538E3800D29F20 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 82CD8A1F16538E3800D29F20 /* UIKit.framework */; };
 		82CD8A2216538E3800D29F20 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 82CD8A2116538E3800D29F20 /* Foundation.framework */; };
@@ -32,6 +34,10 @@
 /* Begin PBXFileReference section */
 		820080B21659859C003F1166 /* Old Code */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "Old Code"; sourceTree = "<group>"; };
 		828FC8E216544B1300B193F7 /* ios-linen.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = "ios-linen.jpg"; path = "../../../Resources/Textures/ios-linen/ios-linen.jpg"; sourceTree = "<group>"; };
+		82938C95165D59C7006887AB /* OneFingerRotationGestureRecognizer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OneFingerRotationGestureRecognizer.h; sourceTree = "<group>"; };
+		82938C96165D59C7006887AB /* OneFingerRotationGestureRecognizer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OneFingerRotationGestureRecognizer.m; sourceTree = "<group>"; };
+		82938C98165E0863006887AB /* RotationView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RotationView.h; sourceTree = "<group>"; };
+		82938C99165E0863006887AB /* RotationView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RotationView.m; sourceTree = "<group>"; };
 		82CA9904165626D700F93B4C /* subtle-pattern-2.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = "subtle-pattern-2.jpg"; path = "../../Resources/Textures/subtle-patterns/subtle-pattern-2.jpg"; sourceTree = "<group>"; };
 		82CD8A1B16538E3800D29F20 /* Blocks.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Blocks.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		82CD8A1F16538E3800D29F20 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
@@ -114,6 +120,10 @@
 				82CD8A2F16538E3800D29F20 /* AppDelegate.m */,
 				82CD8A4216538E5400D29F20 /* BlocksViewController.h */,
 				82CD8A4316538E5400D29F20 /* BlocksViewController.m */,
+				82938C98165E0863006887AB /* RotationView.h */,
+				82938C99165E0863006887AB /* RotationView.m */,
+				82938C95165D59C7006887AB /* OneFingerRotationGestureRecognizer.h */,
+				82938C96165D59C7006887AB /* OneFingerRotationGestureRecognizer.m */,
 				820080B21659859C003F1166 /* Old Code */,
 				82CD8A4B16538ED400D29F20 /* BlocksCell.h */,
 				82CD8A4C16538ED400D29F20 /* BlocksCell.m */,
@@ -220,6 +230,8 @@
 				82CD8A4A16538EC600D29F20 /* Block.m in Sources */,
 				82CD8A4D16538ED400D29F20 /* BlocksCell.m in Sources */,
 				82CD8A5416539F3E00D29F20 /* BlocksCellLabel.m in Sources */,
+				82938C97165D59C7006887AB /* OneFingerRotationGestureRecognizer.m in Sources */,
+				82938C9A165E0863006887AB /* RotationView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

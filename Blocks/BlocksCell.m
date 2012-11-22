@@ -12,17 +12,38 @@
 
 @implementation BlocksCell {
     Block* _block;
-    CATextLayer* _textLayer;
+    //CATextLayer* _textLayer;
     
 }
+
+@synthesize completedLayer;
+@synthesize _textLayer;
 
 - (id)init
 {
     self = [super init];
     
     if (self) {
-        //Set Label
+
         
+    
+        
+        //SET LAYER PROPERTIES
+        self.backgroundColor = [[UIColor blueColor] CGColor];
+        //self.opacity = 0.8;
+        self.cornerRadius = 5;
+        self.rasterizationScale = [[UIScreen mainScreen] scale];
+        self.shouldRasterize = YES;
+        
+        //SET SHADOW PROPERTIES
+        //self.shadowOpacity = 0.6;
+        self.borderColor = [[UIColor blackColor] CGColor];
+        self.borderWidth = 1;
+        self.shadowOffset = CGSizeMake(2, 3);
+        self.shadowRadius = 3;
+        self.masksToBounds = YES;
+
+        //SET LABEL PROPERTIES
         _textLayer = [CATextLayer layer];
         _textLayer.foregroundColor = [[UIColor whiteColor] CGColor];
         _textLayer.font = CGFontCreateWithFontName(CFSTR("HelveticaNeue-Bold"));
@@ -31,47 +52,21 @@
         _textLayer.wrapped = YES;
         _textLayer.frame = self.frame;
         _textLayer.contentsScale = [[UIScreen mainScreen] scale];
-        //[self addSublayer:_textLayer];
-    
-        self.backgroundColor = [[UIColor blueColor] CGColor];
-        
-        //Set Layer Properties
-        
-        self.opacity = 0.8;
-        
-        self.shadowOpacity = 0.6;
-        self.borderColor = [[UIColor blackColor] CGColor];
-        self.shadowOffset = CGSizeMake(2, 3);
-        self.shadowRadius = 3;
-        self.cornerRadius = 5;
-        self.rasterizationScale = [[UIScreen mainScreen] scale];
-        self.shouldRasterize = YES;
+        _textLayer.hidden = YES;
+        [self addSublayer:_textLayer];
+
+        //ADD A COMPLETED LAYER
+        completedLayer = [CALayer layer];
+        completedLayer.frame = CGRectMake(0, 0, self.bounds.size.width, self.bounds.size.height);
+        completedLayer.backgroundColor = [[UIColor whiteColor] CGColor];
+        completedLayer.opacity = 0.5;
+        completedLayer.hidden = YES;
+        [self addSublayer:completedLayer];
         
     }
     return self;
 }
 
-
-/*-(void)handlePan:(UIPanGestureRecognizer *)sender {
-    if (sender.state == UIGestureRecognizerStateBegan) {
-        
-    }
-    
-    CGPoint translate = [sender translationInView:self];
-    CGRect newFrame = sender.view.frame;
-    newFrame.origin.x += translate.x;
-    newFrame.origin.y += translate.y;
-    
-    sender.view.frame = newFrame;
-    [sender setTranslation:CGPointMake(0, 0) inView:sender.view];
-    
-    if (sender.state == UIGestureRecognizerStateEnded) {
-        NSLog(@"Moved: %@",_block.text);
-        _block.x = sender.view.frame.origin.x;
-        _block.y = sender.view.frame.origin.y;
-    }
-}
-*/
 
 - (void)layoutSublayers
 {

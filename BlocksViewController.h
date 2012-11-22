@@ -9,8 +9,9 @@
 #import <UIKit/UIKit.h>
 #import "BlocksView.h"
 #import "Block.h"
+#import "OneFingerRotationGestureRecognizer.h"
 
-@interface BlocksViewController : UIViewController <UIScrollViewDelegate>
+@interface BlocksViewController : UIViewController <UIScrollViewDelegate, OneFingerRotationGestureRecognizerDelegate>
 
 //@property (strong, nonatomic) IBOutlet BlocksView *blocksView;
 
