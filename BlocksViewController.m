@@ -68,6 +68,7 @@ const float CELL_WIDTH_MINIMUM = 50.0f;
     [super viewDidLoad];
     self.view.backgroundColor = [UIColor lightGrayColor];
     
+    
     //Setup Arrays and data
     _arrayOfBlocks = [[NSMutableArray alloc] init];
     _arrayOfBlocksCells = [[NSMutableArray alloc] init];
@@ -85,6 +86,7 @@ const float CELL_WIDTH_MINIMUM = 50.0f;
     borderLayer.frame = _mainView.bounds;
     borderLayer.borderColor = [[UIColor darkGrayColor] CGColor];
     borderLayer.borderWidth = 1;
+    borderLayer.cornerRadius = 6;
     [_mainView.layer addSublayer:borderLayer];
 
     [self.view addSubview:_mainView];
