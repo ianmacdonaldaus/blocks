@@ -1,4 +1,37 @@
 
+-(void)handleRotation:(UIRotationGestureRecognizer*)sender
+{
+    //TEST FOR WHETHER A CELL IS SELECTED
+    _selectedCell = [self layerAtPoint:[sender locationInView:_mainView]];
+    if (_selectedCell) {
+
+        switch (sender.state) {
+        case UIGestureRecognizerStateBegan:
+            [_mainView addSubview:_rotationCircleView];
+            [_mainView addSubview:_rotationText];
+            _selectedCell = [self layerAtPoint:[sender locationInView:_mainView]];
+            break;
+            
+        case UIGestureRecognizerStateChanged:
+                _rotationText.text = [NSString stringWithFormat:@"Duration: \r %.2f",_selectedCell.block.durationLength * sender.rotation];
+                _selectedCell.block.durationLength = _selectedCell.block.durationLength * sender.rotation;
+                [self updateDisplayLayout];
+            break;
+            
+        case UIGestureRecognizerStateEnded:
+                [_rotationCircleView removeFromSuperview];
+                [_rotationText removeFromSuperview];
+                //_selectedCell.block.durationLength = _selectedCell.block.durationLength * sender.rotation;
+                _selectedCell = nil;
+                //[self updateDisplayLayout];
+            break;
+            
+        default:
+            break;
+        }
+    }
+}
+
 Need to install gesture recognizer on the _mainView and detect layer:
 - (CALayer *)hitTest:(CGPoint)thePoint
 CALayer* layerThatWasTapped = [gestureView.layer hitTest:[gestureRecognizer locationInView:gestureView]];

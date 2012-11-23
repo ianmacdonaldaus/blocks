@@ -16,7 +16,8 @@
 
 @property (nonatomic, retain) CALayer* selectedLayer;
 @property (nonatomic, retain) CALayer* completedLayer;
-@property (nonatomic, retain) CATextLayer* _textLayer;
+@property (nonatomic, retain) CATextLayer* textLayer;
+@property CGRect insertionRect;
 
 
 +(id)newBlockCellWithBlock:(Block *)block;

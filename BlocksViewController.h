@@ -11,7 +11,7 @@
 #import "Block.h"
 #import "OneFingerRotationGestureRecognizer.h"
 
-@interface BlocksViewController : UIViewController <UIScrollViewDelegate, OneFingerRotationGestureRecognizerDelegate>
+@interface BlocksViewController : UIViewController <UIScrollViewDelegate, OneFingerRotationGestureRecognizerDelegate, UIGestureRecognizerDelegate>
 
 //@property (strong, nonatomic) IBOutlet BlocksView *blocksView;
 

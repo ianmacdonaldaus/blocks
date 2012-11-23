@@ -42,8 +42,6 @@ const float CELL_WIDTH_MINIMUM = 50.0f;
     BOOL _layoutForwards;
     
     CALayer *_cellMarginLine;
-    UIView *_rotationCircleView;
-    UILabel *_rotationText;
     
     UIView *_rotationView;
     RotationView *_circleView;
@@ -98,10 +96,6 @@ const float CELL_WIDTH_MINIMUM = 50.0f;
     UILongPressGestureRecognizer* longPressGestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongPress:)];
     [_mainView addGestureRecognizer:longPressGestureRecognizer];
     
-/*    UIRotationGestureRecognizer* rotationGestureRecognizer = [[UIRotationGestureRecognizer alloc] initWithTarget:self action:@selector(handleRotation:)];
-    [_mainView addGestureRecognizer:rotationGestureRecognizer];
-*/
-    
     UITapGestureRecognizer* tapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTap:)];
     tapGestureRecognizer.numberOfTapsRequired = 2.0f;
     [_mainView addGestureRecognizer:tapGestureRecognizer];
@@ -114,22 +108,7 @@ const float CELL_WIDTH_MINIMUM = 50.0f;
     _cellMarginLine.backgroundColor = [[UIColor whiteColor] CGColor];
     _cellMarginLine.shouldRasterize = YES;
     _cellMarginLine.rasterizationScale = [[UIScreen mainScreen] scale];
-    [_mainView.layer addSublayer:_cellMarginLine];
-    
-    //ADD A ROTATION CIRCLE
-    _rotationCircleView = [[UIView alloc] initWithFrame:CGRectMake(_mainView.bounds.size.width / 2 - 75, _mainView.bounds.size.height / 2 - 75, 150, 150)];
-    _rotationCircleView.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:0.5];
-    _rotationCircleView.layer.cornerRadius = 75.0f;
-    
-    _rotationText = [[UILabel alloc] initWithFrame:CGRectMake(_mainView.bounds.size.width / 2 - 75, _mainView.bounds.size.height / 2 - 75, _rotationCircleView.bounds.size.width, _rotationCircleView.bounds.size.height)];
-    _rotationText.text = @"rotation";
-    _rotationText.font = [UIFont fontWithName:@"HelveticaNeue-Bold" size:20];
-    _rotationText.textAlignment = NSTextAlignmentCenter;
-    
-    _rotationText.textColor = [UIColor whiteColor];
-    _rotationText.backgroundColor = [UIColor clearColor];
-    _rotationText.opaque = NO;
-    _rotationText.numberOfLines = 2.0f;
+    //[_mainView.layer addSublayer:_cellMarginLine];
     
     //DIAGNOSTICS !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
@@ -169,47 +148,77 @@ const float CELL_WIDTH_MINIMUM = 50.0f;
 
 -(void) setupBlocksCells {
     for (Block* block  in _arrayOfBlocks) {
-        BlocksCell* cell = [[BlocksCell alloc] init];
-        [_arrayOfBlocksCells addObject:cell];
-        cell.block = block;
-        
-                
-        [_mainView.layer addSublayer:cell];
+        BlocksCell* cell = [[BlocksCell alloc] init];       //Create a BlocksCell for every Block
+        [_arrayOfBlocksCells addObject:cell];               //Create array of BlocksCell
+        cell.block = block;                                 //link Cell to Block
+        [_mainView.layer addSublayer:cell];                 //Add BlocksCell sublayer to _mainview
     }
 }
 
--(void) updateDisplayLayout {
-       
-    [UIView animateWithDuration:0.2 animations:^{
-      
-        //Set up layout helper measures
-        float totalDuration = [self getTotalDuration];
-        float mainViewWidth = _mainView.frame.size.width;
-        float mainViewHeight = _mainView.frame.size.height;
-        float durationScale = mainViewWidth / totalDuration;
-        // xOffset counts up for each block size and positioned back the completion line
-        // yOffset counts down for each cell
-        float xOffset = 0;
-        float yOffset = CELL_HEIGHT_MINIMUM * _arrayOfBlocksCells.count;
-        NSEnumerator *enumerator = [_arrayOfBlocksCells reverseObjectEnumerator];
-         for (BlocksCell* cell in enumerator) {
-            Block *block = cell.block;
-            float blockWidth = durationScale * block.durationLength;
-            CGRect cellFrame = CGRectMake(_mainView.frame.size.width - blockWidth - xOffset, yOffset, blockWidth, CELL_HEIGHT_MINIMUM);
-            
-            cell.frame = cellFrame;
-            block.x = DISPLAY_MARGIN + xOffset;
-            block.y = DISPLAY_MARGIN + yOffset;
-            cell.block = block;                       //allocate Block to cell.block
-            xOffset += blockWidth;
-            yOffset -= CELL_HEIGHT_MINIMUM;
-           cell.backgroundColor = [[self colorForIndex:[_arrayOfBlocksCells indexOfObject:cell]] CGColor];
-         }
-    } completion:^(BOOL finished) {
-        
-    }];
-    }
 
+-(void) updateDisplayLayout {
+    for(BlocksCell* cell in _arrayOfBlocksCells) {
+        CGPoint newPoint = [self returnBlocksCellPosition:cell];
+        cell.bounds = CGRectMake(0, 0, cell.block.durationLength * durationScale, CELL_HEIGHT_MINIMUM);
+        cell.position = newPoint;
+        cell.backgroundColor = [[self colorForIndex:[_arrayOfBlocksCells indexOfObject:cell]] CGColor];
+
+    }
+}
+
+-(void) updateDisplayLayoutWithTempIndex:(int)newTempIndex {
+    int i=0;
+
+    int oldIndex = [_arrayOfBlocksCells indexOfObject:_selectedCell];
+    if (newTempIndex == oldIndex) {
+        return;
+    }
+    
+    for(BlocksCell* cell in _arrayOfBlocksCells) {
+        
+        if ((i == oldIndex) || (i < oldIndex && i < newTempIndex) ||  (i > oldIndex && i >  newTempIndex)) {
+            //Do Nothing
+        } else {
+            if (newTempIndex > oldIndex) {
+                CGPoint newPoint = [self returnBlocksCellPosition:cell];
+                        newPoint.x = newPoint.x + _selectedCell.bounds.size.width;
+                        newPoint.y = newPoint.y + _selectedCell.bounds.size.height;
+                cell.bounds = CGRectMake(0, 0, cell.block.durationLength * durationScale, CELL_HEIGHT_MINIMUM);
+                cell.position = newPoint;
+                
+            } else {
+                CGPoint newPoint = [self returnBlocksCellPosition:cell];
+                        newPoint.x = newPoint.x - _selectedCell.bounds.size.width;
+                        newPoint.y = newPoint.y - _selectedCell.bounds.size.height;
+                cell.bounds = CGRectMake(0, 0, cell.block.durationLength * durationScale, CELL_HEIGHT_MINIMUM);
+                cell.position = newPoint;
+        }
+        }
+        i += 1;
+    }
+}
+
+float const durationScale = 5;
+
+-(CGPoint) returnBlocksCellPosition:(BlocksCell*)blocksCell {
+    
+    //get total duration of previous BlocksCells
+    float totalDurationOfPreviousBlocksCells = 0;
+    BlocksCell* cell;
+    for (int i=0; i<[_arrayOfBlocksCells indexOfObject:blocksCell]; i++) {
+        cell = _arrayOfBlocksCells[i];
+        totalDurationOfPreviousBlocksCells += cell.block.durationLength;
+    }
+    
+    float timePlotWidth = _mainView.frame.size.width;
+    float timePlotHeight = CELL_HEIGHT_MINIMUM * _arrayOfBlocksCells.count;
+    
+    CGPoint newPoint;
+    newPoint.x = timePlotWidth - (totalDurationOfPreviousBlocksCells*durationScale) - (blocksCell.block.durationLength*durationScale) / 2;
+    newPoint.y = timePlotHeight - CELL_HEIGHT_MINIMUM * [_arrayOfBlocksCells indexOfObject:blocksCell] - CELL_HEIGHT_MINIMUM / 2;
+    
+    return newPoint;
+}
 
 
 
@@ -276,6 +285,20 @@ const float CELL_WIDTH_MINIMUM = 50.0f;
     
 }
 
+-(void)moveObjectFromIndex:(NSUInteger)from toIndex:(NSUInteger)to
+{
+    if (to != from) {
+        id obj = [_arrayOfBlocksCells objectAtIndex:from];
+        //[obj retain];
+        [_arrayOfBlocksCells removeObjectAtIndex:from];
+        if (to >= [_arrayOfBlocksCells count]) {
+            [_arrayOfBlocksCells addObject:obj];
+        } else {
+            [_arrayOfBlocksCells insertObject:obj atIndex:to];
+        }
+        //        [obj release];
+    }
+}
 
 -(NSInteger)getTotalDuration
 {
@@ -351,7 +374,7 @@ const float CELL_WIDTH_MINIMUM = 50.0f;
                     if (_translatePoint.x > _selectedCell.frame.size.width / 2) {
                         _selectedCell.completedLayer.frame = _selectedCell.bounds;
                         _selectedCell.completedLayer.hidden = NO;
-                        _selectedCell._textLayer.hidden = NO;
+                        _selectedCell.textLayer.hidden = NO;
                         //_selectedCell._textLayer.frame.size.width = _selectedCell.frame.size.width *  (_translatePoint.x  / _selectedCell.frame.size.width);
                     }
                 
@@ -386,18 +409,7 @@ const float CELL_WIDTH_MINIMUM = 50.0f;
         }
         }
 }
-    
-/*      for (BlocksCell *cell in _blocksCellsArray) {
-            if (cell != _selectedCell && CGRectContainsPoint(cell.frame, newFrame.origin)) {
-                NSLog(@"hit %@ , %@",NSStringFromCGRect(cell.frame),NSStringFromCGPoint(newFrame.origin));
-            }
-        }
-        
-        for (NSValue *value in [self arrayOfCenterPoints]) {
-            CGPoint pt = [value CGPointValue];
-            NSLog(@"%f %f",pt.x, pt.y);
-        }
-*/
+
     
 -(void)handleLongPress:(UILongPressGestureRecognizer *)sender {
     
@@ -407,43 +419,70 @@ const float CELL_WIDTH_MINIMUM = 50.0f;
         CGSize shadowOffset = _selectedCell.shadowOffset;
         _selectedCell.shadowOffset = shadowOffset;
         _selectedCell.shadowOffset = CGSizeMake(10, 10);
-        //_selectedCell.shadowOpacity = 0.4;
+        _selectedCell.shadowOpacity = 0.4;
         //_selectedCell.shouldRasterize = NO;
-//        _selectedCell.zPosition = 100;
+        
         [CATransaction begin];
         [CATransaction setValue:(id)kCFBooleanTrue forKey:kCATransactionDisableActions];
-        [_selectedCell removeFromSuperlayer];
-        [_mainView.layer addSublayer:_selectedCell];
+            [_selectedCell removeFromSuperlayer];
+            [_mainView.layer addSublayer:_selectedCell];
         [CATransaction commit];
+        
         _translatePoint.x = [sender locationInView:_mainView].x - _selectedCell.position.x;
         _translatePoint.y = [sender locationInView:_mainView].y - _selectedCell.position.y;
         
     }
     
-    if (sender.state == UIGestureRecognizerStateChanged) {
+    if (sender.state == UIGestureRecognizerStateChanged)
+    {
         CGPoint newPosition = _selectedCell.position;
         newPosition.x = [sender locationInView:_mainView].x - _translatePoint.x;
         newPosition.y = [sender locationInView:_mainView].y - _translatePoint.y;
-     
+        
+        // Keep selected cell within the mainView bounds
         newPosition.x = ((newPosition.x - _selectedCell.bounds.size.width / 2) < 0) ? _selectedCell.bounds.size.width / 2 : newPosition.x;
         newPosition.x = ((newPosition.x + _selectedCell.bounds.size.width / 2) > _mainView.frame.size.width) ? _mainView.frame.size.width - _selectedCell.bounds.size.width / 2 : newPosition.x;
         newPosition.y = ((newPosition.y - _selectedCell.bounds.size.height / 2) < 0) ? _selectedCell.bounds.size.height / 2 : newPosition.y;
         newPosition.y = ((newPosition.y + _selectedCell.bounds.size.height / 2) > _mainView.frame.size.height) ? _mainView.frame.size.height - _selectedCell.bounds.size.height / 2 : newPosition.y;
         
+        //Move selected cell
             [CATransaction begin];
             [CATransaction setValue:(id)kCFBooleanTrue forKey:kCATransactionDisableActions];
                 _selectedCell.position = newPosition;
-                //_cellMarginLine.frame = CGRectMake(newFrame.origin.x, 0, 2, _mainView.frame.size.height);
                 _cellMarginLine.position = CGPointMake(newPosition.x, _mainView.frame.size.height/2);
             [CATransaction commit];
         
- 
-}
+        //Test for ordering of selected cell
 
-    if (sender.state == UIGestureRecognizerStateEnded) {
+        int oldCellIndex;
+        int intersectionCellIndex;
+        bool needToUpdateLayout = NO;
+        for (BlocksCell *cell in _arrayOfBlocksCells) {
+            if(cell != _selectedCell)
+            {
+                CGRect intersectionRectConvertedFromCell = [_mainView.layer convertRect:cell.insertionRect fromLayer:cell];
+                if (CGRectContainsPoint(intersectionRectConvertedFromCell,_selectedCell.position)){
+                    oldCellIndex = [_arrayOfBlocksCells indexOfObject:_selectedCell];
+                    intersectionCellIndex = [_arrayOfBlocksCells indexOfObject:cell];
+                    NSLog(@"Intersects with %d", intersectionCellIndex);
+                    needToUpdateLayout = YES;
+                    break;
+                }
+            }
+        }
+        if(needToUpdateLayout) {
+            [self moveObjectFromIndex:oldCellIndex toIndex:intersectionCellIndex];
+            [self updateDisplayLayout];
+            needToUpdateLayout = NO;
+        }
+    }
+
+    if (sender.state == UIGestureRecognizerStateEnded)
+    {
+        [self updateDisplayLayout];
         _selectedCell.transform = CATransform3DMakeScale(1.0f, 1.0f, 1.0f);
         _selectedCell.shadowOffset = CGSizeMake(2,3);
-        //_selectedCell.shadowOpacity = 0.6;
+        _selectedCell.shadowOpacity = 0.6;
         //_selectedCell.shouldRasterize = YES;
         _selectedCell.zPosition = 0;
         _selectedCell = nil;
@@ -451,48 +490,22 @@ const float CELL_WIDTH_MINIMUM = 50.0f;
     
 }
 
--(void)handleRotation:(UIRotationGestureRecognizer*)sender
-{
-    //TEST FOR WHETHER A CELL IS SELECTED
-    _selectedCell = [self layerAtPoint:[sender locationInView:_mainView]];
-    if (_selectedCell) {
-
-        switch (sender.state) {
-        case UIGestureRecognizerStateBegan:
-            [_mainView addSubview:_rotationCircleView];
-            [_mainView addSubview:_rotationText];
-            _selectedCell = [self layerAtPoint:[sender locationInView:_mainView]];
-            break;
-            
-        case UIGestureRecognizerStateChanged:
-                _rotationText.text = [NSString stringWithFormat:@"Duration: \r %.2f",_selectedCell.block.durationLength * sender.rotation];
-                _selectedCell.block.durationLength = _selectedCell.block.durationLength * sender.rotation;
-                [self updateDisplayLayout];
-            break;
-            
-        case UIGestureRecognizerStateEnded:
-                [_rotationCircleView removeFromSuperview];
-                [_rotationText removeFromSuperview];
-                //_selectedCell.block.durationLength = _selectedCell.block.durationLength * sender.rotation;
-                _selectedCell = nil;
-                //[self updateDisplayLayout];
-            break;
-            
-        default:
-            break;
-        }
-    }
-}
-
 -(void)handleTap:(UITapGestureRecognizer*)sender
 {
     if(sender.state == UIGestureRecognizerStateEnded) {
         _selectedCell = [self layerAtPoint:[sender locationInView:_mainView]];
         if (_selectedCell) {
+            CABasicAnimation *theAnimation;
+            theAnimation = [CABasicAnimation animationWithKeyPath:@"transform.scale"];
+            theAnimation.duration = 0.1;
+            theAnimation.repeatCount = 1;
+            theAnimation.autoreverses = YES;
+            theAnimation.toValue = [NSNumber numberWithFloat:1.3f];
+            theAnimation.delegate = self;
+            [_selectedCell addAnimation:theAnimation forKey:@"theAnimation"];
             [self createRotationScreen];
         }
     }
-    
 }
 
 -(void)createRotationScreen {
@@ -516,13 +529,14 @@ const float CELL_WIDTH_MINIMUM = 50.0f;
     CGPoint midPoint = CGPointMake(_circleView.bounds.size.width/2, _circleView.bounds.size.height / 2);
     CGFloat outRadius = _circleView.frame.size.width / 2;
     
-    oneFingerGestureRecognizer = [[OneFingerRotationGestureRecognizer alloc] initWithMidPoint:midPoint innerRadius:outRadius / 3 outerRadius:outRadius * 2 target:self];
+    oneFingerGestureRecognizer = [[OneFingerRotationGestureRecognizer alloc] initWithMidPoint:midPoint innerRadius:outRadius / 4 outerRadius:outRadius * 2 target:self];
     [_circleView addGestureRecognizer:oneFingerGestureRecognizer];
     
     //IMPLEMENT THE DISMISS ROTATION SCREEN GESTURE RECOGNIZER
-    UITapGestureRecognizer *tapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(dismissRotationScreen)];
-    [_rotationView addGestureRecognizer:tapGestureRecognizer];
-    
+    UITapGestureRecognizer *oneTapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(dismissRotationScreen:)];
+    oneTapGestureRecognizer.numberOfTapsRequired = 1;
+    [_rotationView addGestureRecognizer:oneTapGestureRecognizer];
+       
 }
 
 #pragma mark - CircularGestureRecognizerDelegate protocol
@@ -530,14 +544,16 @@ const float CELL_WIDTH_MINIMUM = 50.0f;
 - (void) rotation: (CGFloat) angle
 {
     // calculate rotation angle
-    CGSize newSize = _selectedCell.frame.size;
-    newSize = CGSizeMake(newSize.width * (1 + angle / 360), newSize.height );
+    float newDurationLength = _selectedCell.block.durationLength * (1 + angle/360);
+    _selectedCell.block.durationLength = newDurationLength;
     [CATransaction commit];
     [CATransaction begin];
     [CATransaction setValue:(id)kCFBooleanTrue forKey:kCATransactionDisableActions];
-    _selectedCell.frame = CGRectMake(_selectedCell.frame.origin.x, _selectedCell.frame.origin.y, newSize.width, newSize.height);
+    [self updateDisplayLayout];
     [CATransaction commit];
-
+    
+    //_rotationText.text = [NSString stringWithFormat:@"%f",_selectedCell.bounds.size.width];
+    
     
     imageAngle += angle;
     if (imageAngle > 360)
@@ -547,7 +563,6 @@ const float CELL_WIDTH_MINIMUM = 50.0f;
     
     // rotate image and update text field
     _circleView.transform = CGAffineTransformMakeRotation(imageAngle *  M_PI / 180);
-
 }
 
 - (void) finalAngle: (CGFloat) angle
@@ -556,9 +571,10 @@ const float CELL_WIDTH_MINIMUM = 50.0f;
     
 }
 
--(void)dismissRotationScreen {
+-(void)dismissRotationScreen:(UITapGestureRecognizer*)sender {
     [_rotationView removeFromSuperview];
-    [self.view removeGestureRecognizer:oneFingerGestureRecognizer];
+    _selectedCell = nil;
+
 }
 
 #pragma mark -
@@ -579,26 +595,6 @@ const float CELL_WIDTH_MINIMUM = 50.0f;
     [self arrayOfCenterPoints];
     NSLog(@"Total Duration: %d",[self getTotalDuration]);
     NSLog(@"array of center points: %@",_arrayOfCenterPoints);
-}
-
--(CGPoint)cellPositionForIndex:(NSInteger)index withDuration:(float)duration withTime:(float)time
-{
-    CGPoint cellPosition = CGPointZero;
-    
-    float mainViewWidth = _mainView.frame.size.width;
-    float mainViewHeight = _mainView.frame.size.height;
-
-    //Determine X position
-    float totalHorizontal = [self getTotalDuration];                //Replace with a local variable to remove calculation
-    float horizontalScale = mainViewWidth / totalHorizontal;
-    float cellWidth = MAX(CELL_WIDTH_MINIMUM,duration * horizontalScale);
-
-    //Determine Y position
-    float totalVertical = _arrayOfBlocksCells.count;
-    float verticalScale = (mainViewHeight - 50) / totalVertical;
-    float cellHeight = MIN(CELL_HEIGHT_MINIMUM, verticalScale);
-    
-    return cellPosition;
 }
 
 @end
